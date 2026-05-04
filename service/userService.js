@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { config, logger } from './../config/index.js';
+import { config } from './../config/index.js';
 import { AppError } from '../api/errorHandler.js';
 
 export default class UserService {
@@ -23,14 +23,12 @@ export default class UserService {
         }
 
         this.collection = collection;
-        logger.info('UserService initialized');
     }
 
     async initAdmin() {
         const existing = await this.collection.findOne({ name: config.auth.admin.name });
         if (!existing) {
             await this.collection.insertOne(config.auth.admin);
-            logger.info('Admin user created');
         }
     }
 
@@ -54,8 +52,6 @@ export default class UserService {
             passwordHash,
         });
 
-        logger.info({ userId: _id, name }, 'User registered successfully');
-
         const { passwordHash: _, ...result } = user;
         return result;
     }
@@ -72,7 +68,6 @@ export default class UserService {
 
         const token = jwt.sign({ id: user._id, name: user.name, role: user.role }, config.auth.jwtSecret, { expiresIn: config.auth.jwtExpiresIn });
 
-        logger.info({ userId: user._id, name }, 'User logged in successfully');
         return { token, token_type: 'Bearer', expires_in: config.auth.jwtExpiresIn };
     }
 
@@ -85,7 +80,6 @@ export default class UserService {
             .toArray();
         const data = users.map((u) => { const { passwordHash: _, ...safe } = u; return safe });
 
-        logger.debug({ page, limit, total, totalPages }, 'Fetched all users');
         return {
             data,
             pagination: { page, limit, total, total_pages: totalPages },
@@ -98,7 +92,6 @@ export default class UserService {
             throw new AppError('User not found', 404);
         }
 
-        logger.debug({ userId: id }, 'Fetched user by ID');
         const { passwordHash, ...result } = user;
         return result;
     }
@@ -122,8 +115,6 @@ export default class UserService {
             passwordHash,
             ...user,
         });
-
-        logger.info({ userId: _id, name, role }, 'User created by admin');
 
         const { passwordHash: _, ...result } = user;
         return result;
@@ -151,7 +142,6 @@ export default class UserService {
             { $set: updated }
         );
 
-        logger.info({ userId: id }, 'User updated successfully');
         const { passwordHash: _, ...safeResult } = updated;
         return safeResult;
     }
@@ -162,7 +152,6 @@ export default class UserService {
             throw new AppError('User not found', 404);
         }
 
-        logger.info({ userId: id }, 'User deleted successfully');
         return result;
     }
 
