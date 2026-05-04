@@ -31,6 +31,8 @@ paths:
                 password:
                   type: string
                   format: password
+                  minLength: 6
+                  maxLength: 20
                   example: securePassword123
       responses:
         '201':
@@ -85,6 +87,8 @@ paths:
                 password:
                   type: string
                   format: password
+                  minLength: 6
+                  maxLength: 20
                   example: securePassword123
       responses:
         '200':
@@ -225,6 +229,8 @@ paths:
                 password:
                   type: string
                   format: password
+                  minLength: 6
+                  maxLength: 20
                 role:
                   type: string
                   enum: [user, admin]
@@ -315,6 +321,8 @@ paths:
                 password:
                   type: string
                   format: password
+                  minLength: 6
+                  maxLength: 20
                 role:
                   type: string
                   enum: [user, admin]

@@ -5,6 +5,18 @@ import { config, logger } from './../config/index.js';
 import { AppError } from '../api/errorHandler.js';
 
 export default class UserService {
+    static MIN_PASSWORD_LENGTH = 6;
+    static MAX_PASSWORD_LENGTH = 20;
+
+    static validatePassword(password) {
+        if (password.length < this.MIN_PASSWORD_LENGTH) {
+            throw new AppError(`Password must be at least ${this.MIN_PASSWORD_LENGTH} characters`, 400);
+        }
+        if (password.length > this.MAX_PASSWORD_LENGTH) {
+            throw new AppError(`Password must be at most ${this.MAX_PASSWORD_LENGTH} characters`, 400);
+        }
+    }
+
     constructor(collection) {
         if (collection === null || collection === undefined) {
             throw new AppError('UserService initialized with null/undefined collection', 500);
@@ -26,6 +38,8 @@ export default class UserService {
         if (!name || !password) {
             throw new AppError('Name and password are required', 400);
         }
+
+        UserService.validatePassword(password);
 
         const existing = await this.collection.findOne({ name });
         if (existing) {
@@ -94,6 +108,8 @@ export default class UserService {
             throw new AppError('Name, password, and role are required', 400);
         }
 
+        UserService.validatePassword(password);
+
         const existing = await this.collection.findOne({ name });
         if (existing) {
             throw new AppError('User already exists', 409);
@@ -120,6 +136,9 @@ export default class UserService {
         }
 
         const { name, password, role } = data;
+        if (password) {
+            UserService.validatePassword(password);
+        }
         const passwordHash = password ? await bcrypt.hash(password, config.auth.saltRounds) : user.passwordHash;
         const updated = {
             name: name || user.name,
