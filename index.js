@@ -3,6 +3,7 @@ import UserRouter from "./api/userRouter.js";
 import express from "express"
 import UserService from "./service/userService.js";
 import { MongoClient } from "mongodb";
+import { errorHandler } from "./api/errorHandler.js";
 
 const shutdown = async (server, client, signal) => {
     logger.info({ signal }, 'Shutting down gracefully');
@@ -35,6 +36,7 @@ const main = async () => {
 
         const userRouter = new UserRouter(service);
         app.use("/", userRouter.Router());
+        app.use(errorHandler);
 
         server = app.listen(config.server.port, () => {
             logger.info({ port: config.server.port }, 'Server started');
