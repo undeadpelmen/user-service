@@ -1,0 +1,5 @@
+{"level":30,"time":1776983476240,"pid":134039,"hostname":"distrohopper","port":8080,"msg":"Server started"}
+{"level":30,"time":1776983479467,"pid":134039,"hostname":"distrohopper","userId":"00000000-0000-0000-0000-000000000001","msg":"User logged in"}
+{"level":30,"time":1776983479475,"pid":134039,"hostname":"distrohopper","method":"POST","path":"/login","status":200,"duration":12,"msg":"Request completed"}
+{"level":30,"time":1776983479500,"pid":134039,"hostname":"distrohopper","userId":"00000000-0000-0000-0000-000000000001","msg":"Authenticated request"}
+{"level":30,"time":1776983479502,"pid":134039,"hostname":"distrohopper","method":"GET","path":"/users","status":200,"duration":5,"msg":"Request completed"}
