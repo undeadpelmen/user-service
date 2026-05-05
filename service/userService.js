@@ -17,12 +17,36 @@ export default class UserService {
         }
     }
 
-    constructor(collection) {
+    constructor(collection, db) {
         if (collection === null || collection === undefined) {
             throw new AppError('UserService initialized with null/undefined collection', 500);
         }
 
         this.collection = collection;
+        this.db = db;
+    }
+
+    async getHealth() {
+        try {
+            await this.db.command({ ping: 1 });
+            return { status: 'ok', database: 'connected', uptime: process.uptime() };
+        } catch {
+            return { status: 'degraded', database: 'disconnected', uptime: process.uptime() };
+        }
+    }
+
+    async getStats() {
+        const total = await this.collection.countDocuments();
+        const roleStats = await this.collection.aggregate([
+            { $group: { _id: '$role', count: { $sum: 1 } } },
+        ]).toArray();
+
+        const roles = {};
+        for (const { _id, count } of roleStats) {
+            roles[_id] = count;
+        }
+
+        return { total_users: total, by_role: roles };
     }
 
     async initAdmin() {

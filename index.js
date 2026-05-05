@@ -31,7 +31,7 @@ const main = async () => {
         const db = client.db(config.database.mongoDbName);
         const collection = db.collection(config.database.mongoCollectionName);
 
-        const service = new UserService(collection);
+        const service = new UserService(collection, db);
         await service.initAdmin();
 
         const userRouter = new UserRouter(service);
