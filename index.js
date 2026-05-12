@@ -1,25 +1,40 @@
 import { config, logger } from "./config/index.js";
 import UserRouter from "./api/userRouter.js";
-import express from "express"
+import cors from "cors"
+import express from "express";
 import UserService from "./service/userService.js";
 import { MongoClient } from "mongodb";
 import { errorHandler } from "./api/errorHandler.js";
 
+const SHUTDOWN_TIMEOUT = 30000;
+
 const shutdown = async (server, client, signal) => {
     logger.info({ signal }, 'Shutting down gracefully');
+
     server.close(async () => {
-        try {
-            await client.close();
-            logger.info('MongoDB connection closed');
-        } catch (err) {
-            logger.error({ err }, 'Error closing MongoDB connection');
-        }
-        process.exit(0);
+        logger.info('HTTP server closed');
     });
+
+    const timeout = setTimeout(() => {
+        logger.error(`Shutdown timed out after ${SHUTDOWN_TIMEOUT}ms`);
+        process.exit(1);
+    }, SHUTDOWN_TIMEOUT);
+    timeout.unref();
+
+    try {
+        await client.close();
+        logger.info('MongoDB connection closed');
+    } catch (err) {
+        logger.error({ err }, 'Error closing MongoDB connection');
+    }
+
+    clearTimeout(timeout);
+    process.exit(0);
 };
 
 const main = async () => {
     const app = express();
+    app.use(cors());
     let client;
     let server;
 
@@ -33,6 +48,12 @@ const main = async () => {
 
         const service = new UserService(collection, db);
         await service.initAdmin();
+
+        app.get("/health", async (req, res) => {
+            const health = await service.getHealth();
+            const statusCode = health.status === 'ok' ? 200 : 503;
+            res.status(statusCode).json(health);
+        });
 
         const userRouter = new UserRouter(service);
         app.use("/", userRouter.Router());

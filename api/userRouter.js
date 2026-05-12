@@ -16,8 +16,6 @@ export default class UserRouter {
         router.post("/register", asyncHandler(this.Register.bind(this)));
         router.post("/login", asyncHandler(this.Login.bind(this)));
         router.get("/authorize", authMiddleware, asyncHandler(this.Authorize.bind(this)));
-        router.get("/health", asyncHandler(this.Health.bind(this)));
-        router.get("/stats", authMiddleware, adminOnly, asyncHandler(this.Stats.bind(this)));
 
         const userRouter = express.Router();
 
@@ -88,14 +86,4 @@ export default class UserRouter {
         res.status(204).send();
     }
 
-    async Health(req, res) {
-        const health = await this.service.getHealth();
-        const statusCode = health.status === 'ok' ? 200 : 503;
-        res.status(statusCode).json(health);
-    }
-
-    async Stats(req, res) {
-        const stats = await this.service.getStats();
-        res.json(stats);
-    }
 }
