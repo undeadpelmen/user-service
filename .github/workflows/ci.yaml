@@ -6,19 +6,33 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: pnpm
-      - run: corepack enable && pnpm install --frozen-lockfile
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
       - run: node --check index.js
       - run: node --check api/userRouter.js
       - run: node --check api/middleware.js
       - run: node --check api/errorHandler.js
       - run: node --check service/userService.js
       - run: node --check config/index.js
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
