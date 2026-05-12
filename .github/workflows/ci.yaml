@@ -17,8 +17,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - run: npm install -g pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
       - run: node --check index.js
       - run: node --check api/userRouter.js
       - run: node --check api/middleware.js
@@ -33,6 +32,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - run: npm install -g pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test
+      - run: npm ci
+      - run: npm test

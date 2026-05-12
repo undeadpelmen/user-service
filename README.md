@@ -14,8 +14,8 @@ User management microservice with JWT authentication, role-based access (user/ad
 ## Quick Start
 
 ```
-pnpm install
-pnpm start
+npm install
+npm start
 ```
 
 Requires a MongoDB instance. Configure via environment variables (see below).
