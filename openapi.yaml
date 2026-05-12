@@ -156,34 +156,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
 
-  /stats:
-    get:
-      summary: User statistics
-      description: Returns user count statistics broken down by role (admin only)
-      tags:
-        - System
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Statistics retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Stats'
-        '401':
-          description: Unauthorized - invalid or missing token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: Forbidden - admin role required
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
   /users:
     get:
       summary: List all users
@@ -496,20 +468,3 @@ components:
           type: number
           description: Service uptime in seconds
           example: 3600.5
-
-    Stats:
-      type: object
-      description: User statistics
-      properties:
-        total_users:
-          type: integer
-          description: Total number of users
-          example: 150
-        by_role:
-          type: object
-          description: User count broken down by role
-          additionalProperties:
-            type: integer
-          example:
-            admin: 3
-            user: 147
